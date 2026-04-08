@@ -18,38 +18,65 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const currentItem = navItems.find(item => item.path === location.pathname);
   const pageTitle = currentItem ? currentItem.name : "Kisan Mitrum Platform";
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   return (
     <div className="app-container">
-      <aside className="sidebar">
-        <div className="logo-container">
+      {/* Top Navbar */}
+      <header className="topbar">
+        <div className="logo-container topbar-logo" onClick={toggleSidebar} title="Toggle Menu">
           <img src="/kisan_mitrum_logo.png" alt="Logo" className="logo-img" />
           <span className="logo-text">Kisan</span>
         </div>
-        <nav className="nav-menu">
+
+        <nav className="topbar-nav hide-on-mobile">
           {navItems.map(item => (
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+              className={({ isActive }) => isActive ? "top-nav-item active" : "top-nav-item"}
             >
-              <item.icon className="nav-icon" />
               <span>{item.name}</span>
             </NavLink>
           ))}
         </nav>
-      </aside>
 
-      <main className="main-content">
-        <header className="topbar">
-          <h1 className="page-title">{pageTitle}</h1>
+        <div className="topbar-right">
+          <h1 className="page-title show-on-mobile">{pageTitle}</h1>
           <div className="user-profile">
-            <span style={{ color: 'var(--color-text-muted)' }}>Farmer_01</span>
+            <span style={{ color: 'var(--color-text-muted)' }} className="hide-on-mobile">Farmer_01</span>
             <div className="avatar">F</div>
           </div>
-        </header>
-        {children}
-      </main>
+        </div>
+      </header>
+
+      <div className="main-wrapper">
+        <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <nav className="nav-menu">
+            {navItems.map(item => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <item.icon className="nav-icon" />
+                <span>{item.name}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </aside>
+
+        {isSidebarOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
+
+        <main className="main-content">
+          {children}
+        </main>
+      </div>
     </div>
   );
 };
