@@ -2,16 +2,13 @@ import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from openai import OpenAI
 from dotenv import load_dotenv
 from database import engine
 import models
+import gemini
 
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai_client = None
-if OPENAI_API_KEY and OPENAI_API_KEY != "your_openai_api_key_here":
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -53,16 +50,10 @@ def get_offline_response(message: str) -> str:
 
 @app.post("/api/chat")
 def chat_endpoint(request: ChatRequest):
-    if openai_client:
+    if GEMINI_API_KEY and GEMINI_API_KEY != "insert_your_actual_gemini_key_here":
         try:
-            completion = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "You are an expert personal farming assistant for Kerala farmers called Kisan Mitrum that gives concise, accurate agricultural advice."},
-                    {"role": "user", "content": request.message}
-                ]
-            )
-            response = completion.choices[0].message.content
+            prompt = f"You are an expert personal farming assistant for Kerala farmers called Kisan Mitrum that gives concise, accurate agricultural advice. The user says: '{request.message}'. Provide a helpful short response without formatting."
+            response = gemini.ask_gemini(prompt)
         except Exception as e:
             print(f"LLM Error: {e}")
             response = get_offline_response(request.message)
