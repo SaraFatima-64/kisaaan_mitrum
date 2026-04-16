@@ -3,6 +3,33 @@ import { Bot, CloudSun, ActivitySquare, ShoppingBag, Landmark, Tractor, LayoutDa
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import { Dashboard, Chatbot, Weather, Activity, Marketplace, Schemes, RoverBooking } from './pages';
+import { useLanguage } from './LanguageContext';
+
+const LanguageModal = () => {
+  const { language, setLanguage } = useLanguage();
+  if (language) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      backdropFilter: 'blur(5px)'
+    }}>
+      <div className="card glass-panel" style={{ width: '90%', maxWidth: '400px', textAlign: 'center', padding: '2rem' }}>
+        <h2 style={{ marginBottom: '1rem' }}>Welcome / स्वागत / സ്വാഗതം</h2>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
+          Please select your preferred language.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <button className="btn btn-secondary" onClick={() => setLanguage('en')}>English</button>
+          <button className="btn btn-secondary" onClick={() => setLanguage('hi')}>हिंदी (Hindi)</button>
+          <button className="btn btn-secondary" onClick={() => setLanguage('ml')}>മലയാളം (Malayalam)</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const navItems = [
   { path: '/dashboard', name: 'Dashboard', icon: LayoutDashboard },
@@ -84,6 +111,7 @@ const Layout = ({ children }) => {
 export default function App() {
   return (
     <BrowserRouter>
+      <LanguageModal />
       <Layout>
         <Routes>
           <Route path="/" element={<Dashboard />} />

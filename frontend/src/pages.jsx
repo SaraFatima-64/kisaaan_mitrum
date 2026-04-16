@@ -1,37 +1,55 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CloudSun, ActivitySquare, ShoppingBag, Landmark, Tractor, LayoutDashboard, Send, Mic } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
-export const Dashboard = () => (
-    <div className="page-container animate-fade-in">
-        <div className="grid-3" style={{ marginBottom: '1.5rem' }}>
-            <div className="card">
-                <h3 style={{ color: 'var(--color-primary-light)' }}>Soil Moisture</h3>
-                <div style={{ fontSize: '2rem', fontWeight: '700', marginTop: '1rem' }}>42%</div>
-                <p style={{ color: 'var(--color-text-muted)' }}>Optimal range</p>
+export const Dashboard = () => {
+    const { language, setLanguage, t } = useLanguage();
+
+    return (
+        <div className="page-container animate-fade-in">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', background: 'var(--color-primary-light)', padding: '10px 15px', borderRadius: 'var(--radius-md)', width: 'max-content', boxShadow: 'var(--shadow-sm)' }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: '500', color: 'white' }}>{t('dash.language')}:</span>
+                <select 
+                    value={language || 'en'} 
+                    onChange={(e) => setLanguage(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-sm)', background: 'white', color: 'var(--color-bg)', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '1.1rem', fontWeight: '500', minWidth: '150px' }}
+                >
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="ml">മലയാളം</option>
+                </select>
             </div>
-            <div className="card">
-                <h3 style={{ color: 'var(--color-primary-light)' }}>Soil pH</h3>
-                <div style={{ fontSize: '2rem', fontWeight: '700', marginTop: '1rem' }}>6.5</div>
-                <p style={{ color: 'var(--color-text-muted)' }}>Slightly acidic</p>
+
+            <div className="grid-3" style={{ marginBottom: '1.5rem' }}>
+                <div className="card">
+                    <h3 style={{ color: 'var(--color-primary-light)' }}>{t('dash.soil_moisture')}</h3>
+                    <div style={{ fontSize: '2rem', fontWeight: '700', marginTop: '1rem' }}>42%</div>
+                    <p style={{ color: 'var(--color-text-muted)' }}>{t('dash.optimal_range')}</p>
+                </div>
+                <div className="card">
+                    <h3 style={{ color: 'var(--color-primary-light)' }}>{t('dash.soil_ph')}</h3>
+                    <div style={{ fontSize: '2rem', fontWeight: '700', marginTop: '1rem' }}>6.5</div>
+                    <p style={{ color: 'var(--color-text-muted)' }}>{t('dash.slightly_acidic')}</p>
+                </div>
+                <div className="card">
+                    <h3 style={{ color: 'var(--color-primary-light)' }}>{t('dash.last_scan')}</h3>
+                    <div style={{ fontSize: '2rem', fontWeight: '700', marginTop: '1rem' }}>{t('dash.2h_ago')}</div>
+                    <p style={{ color: 'var(--color-success)' }}>{t('dash.no_pests')}</p>
+                </div>
             </div>
-            <div className="card">
-                <h3 style={{ color: 'var(--color-primary-light)' }}>Last Scan</h3>
-                <div style={{ fontSize: '2rem', fontWeight: '700', marginTop: '1rem' }}>2h ago</div>
-                <p style={{ color: 'var(--color-success)' }}>No pests detected</p>
+
+            <div className="card glass-panel" style={{ marginTop: '2rem' }}>
+                <h3>{t('dash.recent_images')}</h3>
+                <div className="grid-4" style={{ marginTop: '1rem' }}>
+                    <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
+                    <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
+                    <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
+                    <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
+                </div>
             </div>
         </div>
-
-        <div className="card glass-panel" style={{ marginTop: '2rem' }}>
-            <h3>Recent Rover Images (Kisan Sakhi)</h3>
-            <div className="grid-4" style={{ marginTop: '1rem' }}>
-                <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
-                <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
-                <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
-                <div style={{ height: '120px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)' }}></div>
-            </div>
-        </div>
-    </div>
-);
+    );
+};
 
 export const Chatbot = () => {
     const [messages, setMessages] = useState([
@@ -187,20 +205,124 @@ export const Activity = () => (
     </div>
 );
 
-export const Marketplace = () => (
-    <div className="page-container animate-fade-in">
-        <div className="grid-3">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="card">
-                    <div style={{ height: '150px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)', marginBottom: '1rem' }} />
-                    <h4>Organic Seeds Pack {i}</h4>
-                    <p style={{ color: 'var(--color-primary-light)', fontWeight: 'bold', fontSize: '1.25rem', marginTop: '0.5rem' }}>₹450</p>
-                    <button className="btn btn-secondary" style={{ width: '100%', marginTop: '1rem' }}>Add to Cart</button>
+export const Marketplace = () => {
+    const [activeCategory, setActiveCategory] = useState('seeds');
+    const [cart, setCart] = useState([]);
+
+    const categories = ['fruits', 'vegetables', 'seeds', 'pesticides'];
+    
+    const products = {
+        fruits: [
+            { id: 'f1', name: 'Alphonso Mango', price: 80 },
+            { id: 'f2', name: 'Cavendish Banana', price: 40 },
+            { id: 'f3', name: 'Nagpur Orange', price: 60 },
+        ],
+        vegetables: [
+            { id: 'v1', name: 'Onion (Nashik)', price: 30 },
+            { id: 'v2', name: 'Tomato', price: 25 },
+            { id: 'v3', name: 'Potato', price: 20 },
+        ],
+        seeds: [
+            { id: 's1', name: 'Organic Wheat Seeds', price: 450 },
+            { id: 's2', name: 'Hybrid Tomato Seeds', price: 150 },
+            { id: 's3', name: 'Paddy Seeds IR64', price: 600 },
+        ],
+        pesticides: [
+            { id: 'p1', name: 'Neem Oil Extract', price: 250 },
+            { id: 'p2', name: 'Bio-Fungicide', price: 300 },
+            { id: 'p3', name: 'Organic Insecticide', price: 180 },
+        ]
+    };
+
+    const addToCart = (item, type) => {
+        setCart(prev => {
+            const existing = prev.find(i => i.id === item.id && i.type === type);
+            if (existing) {
+                return prev.map(i => i.id === item.id && i.type === type ? { ...i, quantity: i.quantity + 1 } : i);
+            }
+            return [...prev, { ...item, type, quantity: 1 }];
+        });
+    };
+
+    const buyTotal = cart.filter(i => i.type === 'buy').reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const sellTotal = cart.filter(i => i.type === 'sell').reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    return (
+        <div className="page-container animate-fade-in" style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 60%' }}>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+                    {categories.map(cat => (
+                        <button 
+                            key={cat} 
+                            className={`btn ${activeCategory === cat ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => setActiveCategory(cat)}
+                            style={{ textTransform: 'capitalize' }}
+                        >
+                            {cat}
+                        </button>
+                    ))}
                 </div>
-            ))}
+
+                <div className="grid-3">
+                    {products[activeCategory].map(item => (
+                        <div key={item.id} className="card">
+                            <div style={{ height: '150px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <ShoppingBag size={48} color="var(--color-text-muted)" opacity={0.3} />
+                            </div>
+                            <h4 style={{ fontSize: '1.2rem'}}>{item.name}</h4>
+                            <p style={{ color: 'var(--color-primary-light)', fontWeight: 'bold', fontSize: '1.25rem', marginTop: '0.5rem' }}>₹{item.price}/unit</p>
+                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                <button className="btn btn-primary" style={{ flex: 1, padding: '8px' }} onClick={() => addToCart(item, 'buy')}>Buy</button>
+                                <button className="btn btn-secondary" style={{ flex: 1, padding: '8px' }} onClick={() => addToCart(item, 'sell')}>Sell</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="card glass-panel" style={{ flex: '1 1 300px', minWidth: '300px', height: 'fit-content', position: 'sticky', top: '2rem' }}>
+                <h3 style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>Your Cart</h3>
+                {cart.length === 0 ? (
+                    <p style={{ color: 'var(--color-text-muted)' }}>Cart is empty</p>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {cart.map((item, idx) => (
+                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <div style={{ fontWeight: '500' }}>{item.name}</div>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>
+                                        {item.type} • Qty: {item.quantity}
+                                    </div>
+                                </div>
+                                <div style={{ fontWeight: '600', color: item.type === 'buy' ? 'var(--color-danger)' : 'var(--color-success)' }}>
+                                    {item.type === 'buy' ? '-' : '+'}₹{item.price * item.quantity}
+                                </div>
+                            </div>
+                        ))}
+                        
+                        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                <span>Buy Total:</span>
+                                <span style={{ color: 'var(--color-danger)', fontWeight: '600' }}>₹{buyTotal}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                <span>Sell Total:</span>
+                                <span style={{ color: 'var(--color-success)', fontWeight: '600' }}>₹{sellTotal}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                                <span>Net:</span>
+                                <span style={{ color: sellTotal - buyTotal >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                                    {sellTotal - buyTotal >= 0 ? '+' : ''}₹{sellTotal - buyTotal}
+                                </span>
+                            </div>
+                        </div>
+                        <button className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Checkout</button>
+                    </div>
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export const Schemes = () => (
     <div className="page-container animate-fade-in">
