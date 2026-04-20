@@ -2,11 +2,12 @@
 
 <!-- AGENT INSTRUCTIONS
 This file is the single source of truth for the Kisan project.
+CRITICAL MANDATORY RULE: Whenever any new functionality, feature, or structural change is made to the codebase in the future, you MUST automatically update this README file to reflect those changes.
 When making changes:
-  1. Update the relevant section(s) only.
+  1. Update the relevant section(s) (e.g., [COMPONENTS], [UI_DESIGN], etc.).
   2. Increment the version number in the [Meta] block below.
   3. Update the `last_updated` date.
-  4. Add a one-line entry under [Changelog].
+  4. Add a descriptive entry under [Changelog] documenting the new functionality.
 Sections use SCREAMING_SNAKE_CASE anchors so agents can locate them with a grep or keyword search.
 -->
 
@@ -15,8 +16,8 @@ Sections use SCREAMING_SNAKE_CASE anchors so agents can locate them with a grep 
 ## [META]
 ```
 project_name   : Kisan
-version        : 2.0.0
-last_updated   : 2025-07-11
+version        : 2.2.0
+last_updated   : 2026-04-18
 status         : In Development
 document_owner : Project Team
 ```
@@ -39,11 +40,13 @@ to deliver personalized, real-time agricultural guidance using AI, IoT, and Mach
 A React.js + FastAPI web platform that acts as the farmer's digital assistant.
 
 **Features:**
-- AI Chatbot (LLM + rule-based hybrid)
-- Voice interface
+- User Authentication System (Sign In/Log In modal with dynamic user profile display)
+- Multilingual support with explicit language toggling functionality
+- Responsive Navigation (Top status bar and collapsible left-hand menu)
+- AI Chatbot (OpenAI LLM API integration with rule-based fallback and Voice-to-Text input)
 - Weather alerts dashboard
-- Activity logging system
-- E-commerce marketplace
+- Activity logging system (dynamic entry with adaptive virtual Hindi/Malayalam keyboard)
+- E-commerce marketplace (with cart management and image-mapped inventory)
 - Government schemes portal
 - Rover booking page (for Kisan Sakhi)
 - Data analysis dashboard (displays rover-collected data)
@@ -121,9 +124,11 @@ Kisan Sakhi (rover)  -->  Kisan Mitrum (web app)  -->  Recommendations
 
 ## [CHANGELOG]
 
-| Version | Date       | Change                          |
-|---------|------------|---------------------------------|
-| 2.0.0   | 2025-07-11 | Initial README created from v2 project document |
+| Version | Date       | Change                                                                                                                                                                      |
+|---------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2.2.0   | 2026-04-18 | Elevated Marketplace/Rover Booking with mapped inventory images and confirmation popups; implemented dynamic Activity Logging via a custom multi-language Virtual Keyboard.   |
+| 2.1.0   | 2026-04-18 | Added User Authentication, Multilingual localization/toggle, Navigation refactoring, Chatbot migration to OpenAI & offline fallback, and secured environment configurations. |
+| 2.0.0   | 2025-07-11 | Initial README created from v2 project document                                                                                                                             |
 
 ---
 

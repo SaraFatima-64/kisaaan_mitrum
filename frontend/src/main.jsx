@@ -3,11 +3,14 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { LanguageProvider } from './LanguageContext.jsx'
+import { UserProvider } from './UserContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <LanguageProvider>
-      <App />
-    </LanguageProvider>
+    <UserProvider>
+      <LanguageProvider>
+        <App />
+      </LanguageProvider>
+    </UserProvider>
   </React.StrictMode>,
 )

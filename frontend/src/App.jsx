@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
-import { Bot, CloudSun, ActivitySquare, ShoppingBag, Landmark, Tractor, LayoutDashboard } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { Bot, CloudSun, ActivitySquare, ShoppingBag, Landmark, Tractor, LayoutDashboard, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect, useContext } from 'react';
 import './index.css';
 import { Dashboard, Chatbot, Weather, Activity, Marketplace, Schemes, RoverBooking } from './pages';
 import { useLanguage } from './LanguageContext';
+import { UserContext } from './UserContext';
 
 const LanguageModal = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   if (language) return null;
 
   return (
@@ -17,9 +18,9 @@ const LanguageModal = () => {
       backdropFilter: 'blur(5px)'
     }}>
       <div className="card glass-panel" style={{ width: '90%', maxWidth: '400px', textAlign: 'center', padding: '2rem' }}>
-        <h2 style={{ marginBottom: '1rem' }}>Welcome / स्वागत / സ്വാഗതം</h2>
+        <h2 style={{ marginBottom: '1rem' }}>{t('popup.welcome')} / स्वागत / സ്വാഗതം</h2>
         <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-          Please select your preferred language.
+          {t('popup.choose_pref')}
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <button className="btn btn-secondary" onClick={() => setLanguage('en')}>English</button>
@@ -32,23 +33,146 @@ const LanguageModal = () => {
 };
 
 const navItems = [
-  { path: '/dashboard', name: 'Dashboard', icon: LayoutDashboard },
-  { path: '/chatbot', name: 'AI Chatbot', icon: Bot },
-  { path: '/weather', name: 'Weather Alerts', icon: CloudSun },
-  { path: '/activity', name: 'Activity Log', icon: ActivitySquare },
-  { path: '/marketplace', name: 'Marketplace', icon: ShoppingBag },
-  { path: '/schemes', name: 'Govt Schemes', icon: Landmark },
-  { path: '/rover-booking', name: 'Rover Booking', icon: Tractor },
+  { path: '/dashboard', labelKey: 'nav.dashboard', icon: LayoutDashboard },
+  { path: '/chatbot', labelKey: 'nav.chatbot', icon: Bot },
+  { path: '/weather', labelKey: 'nav.weather', icon: CloudSun },
+  { path: '/activity', labelKey: 'nav.activity', icon: ActivitySquare },
+  { path: '/marketplace', labelKey: 'nav.marketplace', icon: ShoppingBag },
+  { path: '/schemes', labelKey: 'nav.schemes', icon: Landmark },
+  { path: '/rover-booking', labelKey: 'nav.rover', icon: Tractor },
 ];
 
+const indianStates = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
+
+const LoginModal = ({ isOpen, onClose, onLogin }) => {
+  const { t } = useLanguage();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [stateName, setStateName] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleSave = () => {
+    // Phone Validation
+    const phoneValid = /^\d{10}$/.test(phone);
+    if (!phoneValid) {
+      setError(t('auth.err_phone'));
+      return;
+    }
+
+    // Validation
+    const lengthValid = password.length >= 8;
+    const hasAlphaNumber = /[a-zA-Z]/.test(password) && /[0-9]/.test(password);
+    const hasCapital = /[A-Z]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!(lengthValid && hasAlphaNumber && hasCapital && hasSpecial)) {
+      setError(t('auth.err_pass'));
+      return;
+    }
+    
+    setError('');
+    onLogin({ name: name || 'User', stateName });
+    // Reset state for next open
+    setName(''); setEmail(''); setPhone(''); setStateName(''); setPassword('');
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      backdropFilter: 'blur(5px)'
+    }}>
+      <div className="card glass-panel" style={{ width: '90%', maxWidth: '400px', padding: '2rem', maxHeight: '90vh', overflowY: 'auto' }}>
+        <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>{t('auth.signin')}</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <input 
+            type="text" 
+            placeholder={t('auth.name')} 
+            value={name} 
+            onChange={e => setName(e.target.value)} 
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+          />
+          <input 
+            type="email" 
+            placeholder={t('auth.email')} 
+            value={email} 
+            onChange={e => setEmail(e.target.value)}
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+          />
+          <input 
+            type="tel" 
+            placeholder={t('auth.phone')} 
+            value={phone} 
+            onChange={e => setPhone(e.target.value)} 
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+          />
+          <select 
+            value={stateName} 
+            onChange={e => setStateName(e.target.value)} 
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+          >
+            <option value="" disabled>{t('auth.state')}</option>
+            {indianStates.map(state => (
+              <option key={state} value={state}>{state}</option>
+            ))}
+          </select>
+          <div style={{ position: 'relative' }}>
+            <input 
+              type={showPassword ? "text" : "password"} 
+              placeholder={t('auth.password')} 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+              style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+            />
+            <button 
+              onClick={() => setShowPassword(!showPassword)} 
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer' }}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', background: 'var(--color-surface-elevated)', padding: '0.75rem', borderRadius: 'var(--radius-md)' }}>
+            <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>{t('auth.rules_title')}</div>
+            <ul style={{ margin: '0', paddingLeft: '1.2rem', lineHeight: '1.4' }}>
+              <li>{t('auth.rule_length')}</li>
+              <li>{t('auth.rule_alpha')}</li>
+              <li>{t('auth.rule_capital')}</li>
+              <li>{t('auth.rule_special')}</li>
+            </ul>
+          </div>
+          {error && <div style={{ color: 'var(--color-danger)', fontSize: '0.85rem' }}>{error}</div>}
+          <button className="btn btn-primary" style={{ marginTop: '0.5rem' }} onClick={handleSave}>{t('auth.save')}</button>
+          <button className="btn btn-secondary" onClick={onClose}>{t('auth.cancel')}</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Layout = ({ children }) => {
+  const { t } = useLanguage();
   const location = useLocation();
   const currentItem = navItems.find(item => item.path === location.pathname);
-  const pageTitle = currentItem ? currentItem.name : "Kisan Mitrum Platform";
+  const pageTitle = currentItem ? t(currentItem.labelKey) : "Kisan Mitrum Platform";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { user, setUser } = useContext(UserContext);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    setIsLoginModalOpen(false);
   };
 
   return (
@@ -67,19 +191,31 @@ const Layout = ({ children }) => {
               to={item.path}
               className={({ isActive }) => isActive ? "top-nav-item active" : "top-nav-item"}
             >
-              <span>{item.name}</span>
+              <span>{t(item.labelKey)}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="topbar-right">
           <h1 className="page-title show-on-mobile">{pageTitle}</h1>
-          <div className="user-profile">
-            <span style={{ color: 'var(--color-text-muted)' }} className="hide-on-mobile">Farmer_01</span>
-            <div className="avatar">F</div>
+          <div className="user-profile" style={{ cursor: user ? 'default' : 'pointer' }} onClick={() => !user && setIsLoginModalOpen(true)}>
+            {user ? (
+              <>
+                <span style={{ color: 'var(--color-text-muted)' }} className="hide-on-mobile">{user.name}</span>
+                <div className="avatar">{user.name.charAt(0).toUpperCase()}</div>
+              </>
+            ) : (
+              <span style={{ color: 'var(--color-text-muted)', fontWeight: 'bold' }}>{t('auth.signin_login')}</span>
+            )}
           </div>
         </div>
       </header>
+
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+        onLogin={handleLogin} 
+      />
 
       <div className="main-wrapper">
         <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
@@ -92,7 +228,7 @@ const Layout = ({ children }) => {
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <item.icon className="nav-icon" />
-                <span>{item.name}</span>
+                <span>{t(item.labelKey)}</span>
               </NavLink>
             ))}
           </nav>

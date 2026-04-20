@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { CloudSun, ActivitySquare, ShoppingBag, Landmark, Tractor, LayoutDashboard, Send, Mic } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
+import { UserContext } from './UserContext';
 
 export const Dashboard = () => {
     const { language, setLanguage, t } = useLanguage();
@@ -9,8 +10,8 @@ export const Dashboard = () => {
         <div className="page-container animate-fade-in">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem', background: 'var(--color-primary-light)', padding: '10px 15px', borderRadius: 'var(--radius-md)', width: 'max-content', boxShadow: 'var(--shadow-sm)' }}>
                 <span style={{ fontSize: '1.2rem', fontWeight: '500', color: 'white' }}>{t('dash.language')}:</span>
-                <select 
-                    value={language || 'en'} 
+                <select
+                    value={language || 'en'}
                     onChange={(e) => setLanguage(e.target.value)}
                     style={{ padding: '8px 12px', borderRadius: 'var(--radius-sm)', background: 'white', color: 'var(--color-bg)', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '1.1rem', fontWeight: '500', minWidth: '150px' }}
                 >
@@ -52,8 +53,9 @@ export const Dashboard = () => {
 };
 
 export const Chatbot = () => {
+    const { t } = useLanguage();
     const [messages, setMessages] = useState([
-        { sender: 'bot', text: 'Hello! I am your AI personal farming assistant. How can I help you today?', id: 1 }
+        { sender: 'bot', text: t('chat.placeholder') === 'Type your message...' ? 'Hello! I am your AI personal farming assistant. How can I help you today?' : 'नमस्ते! मैं आपका एआई व्यक्तिगत कृषि सहायक हूं। मैं आपकी कैसे मदद कर सकता हूं? / നമസ്കാരം! ഞാൻ നിങ്ങളുടെ എഐ വ്യക്തിഗത കാർഷിക സഹായിയാണ്. എനിക്ക് നിങ്ങളെ എങ്ങനെ സഹായിക്കാനാകും?', id: 1 }
     ]);
     const [inputText, setInputText] = useState('');
     const [isRecording, setIsRecording] = useState(false);
@@ -69,14 +71,14 @@ export const Chatbot = () => {
 
     const handleSend = async () => {
         if (!inputText.trim()) return;
-        
+
         const userMsg = { sender: 'user', text: inputText, id: Date.now() };
         setMessages(prev => [...prev, userMsg]);
         setInputText('');
-        
+
         // Add thinking message
         const thinkingId = Date.now() + 1;
-        setMessages(prev => [...prev, { sender: 'bot', text: 'Thinking...', id: thinkingId, isThinking: true }]);
+        setMessages(prev => [...prev, { sender: 'bot', text: t('chat.thinking'), id: thinkingId, isThinking: true }]);
 
         try {
             const res = await fetch('http://127.0.0.1:8000/api/chat', {
@@ -85,12 +87,12 @@ export const Chatbot = () => {
                 body: JSON.stringify({ message: userMsg.text }),
             });
             const data = await res.json();
-            
+
             // Replaces "Thinking..." with actual reply
             setMessages(prev => prev.map(m => m.id === thinkingId ? { sender: 'bot', text: data.response, id: thinkingId } : m));
         } catch (error) {
             console.error('Chat error:', error);
-            setMessages(prev => prev.map(m => m.id === thinkingId ? { sender: 'bot', text: 'Sorry, I am having trouble connecting to the network right now.', id: thinkingId } : m));
+            setMessages(prev => prev.map(m => m.id === thinkingId ? { sender: 'bot', text: t('chat.error'), id: thinkingId } : m));
         }
     };
 
@@ -123,7 +125,7 @@ export const Chatbot = () => {
             console.error('Speech recognition error', event.error);
             setIsRecording(false);
         };
-        
+
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             setInputText(transcript);
@@ -137,13 +139,13 @@ export const Chatbot = () => {
             <div className="card glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', marginBottom: '1rem', overflow: 'hidden' }}>
                 <div style={{ flex: 1, padding: '1rem', overflowY: 'auto' }}>
                     {messages.map((msg) => (
-                        <div key={msg.id} style={{ 
-                            background: msg.sender === 'user' ? 'var(--color-primary)' : 'var(--color-surface-elevated)', 
-                            color: msg.sender === 'user' ? 'white' : 'var(--color-text)', 
-                            padding: '1rem', 
-                            borderRadius: msg.sender === 'user' ? 'var(--radius-md) var(--radius-md) 0 var(--radius-md)' : 'var(--radius-md) var(--radius-md) var(--radius-md) 0', 
-                            maxWidth: '80%', 
-                            marginLeft: msg.sender === 'user' ? 'auto' : '0', 
+                        <div key={msg.id} style={{
+                            background: msg.sender === 'user' ? 'var(--color-primary)' : 'var(--color-surface-elevated)',
+                            color: msg.sender === 'user' ? 'white' : 'var(--color-text)',
+                            padding: '1rem',
+                            borderRadius: msg.sender === 'user' ? 'var(--radius-md) var(--radius-md) 0 var(--radius-md)' : 'var(--radius-md) var(--radius-md) var(--radius-md) 0',
+                            maxWidth: '80%',
+                            marginLeft: msg.sender === 'user' ? 'auto' : '0',
                             marginBottom: '1rem',
                             opacity: msg.isThinking ? 0.7 : 1
                         }}>
@@ -156,13 +158,13 @@ export const Chatbot = () => {
                     <button onClick={toggleMic} className={`btn ${isRecording ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '10px', background: isRecording ? 'red' : '', borderColor: isRecording ? 'red' : '' }}>
                         <Mic size={20} />
                     </button>
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Type your message..." 
-                        style={{ flex: 1, background: 'var(--color-bg)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '0 1rem', color: 'var(--color-text)' }} 
+                        placeholder={t('chat.placeholder')}
+                        style={{ flex: 1, background: 'var(--color-bg)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '0 1rem', color: 'var(--color-text)' }}
                     />
                     <button onClick={handleSend} className="btn btn-primary"><Send size={20} /></button>
                 </div>
@@ -171,66 +173,231 @@ export const Chatbot = () => {
     );
 };
 
-export const Weather = () => (
-    <div className="page-container animate-fade-in">
-        <div className="card glass-panel text-center" style={{ padding: '3rem', marginBottom: '2rem', textAlign: 'center' }}>
-            <CloudSun size={64} color="var(--color-accent)" style={{ margin: '0 auto 1rem auto' }} />
-            <h2 style={{ fontSize: '3rem', marginTop: '1rem' }}>32°C</h2>
-            <p style={{ color: 'var(--color-text-muted)' }}>Partly Cloudy • Kerala</p>
-        </div>
-        <div className="grid-3">
-            <div className="card"><h4 style={{ color: 'var(--color-text-muted)' }}>Humidity</h4><h3 style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>78%</h3></div>
-            <div className="card"><h4 style={{ color: 'var(--color-text-muted)' }}>Precipitation</h4><h3 style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>10% chance</h3></div>
-            <div className="card"><h4 style={{ color: 'var(--color-text-muted)' }}>Wind</h4><h3 style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>12 km/h</h3></div>
-        </div>
-    </div>
-);
+export const Weather = () => {
+    const { t } = useLanguage();
+    const { user } = useContext(UserContext);
+    const displayState = user?.stateName ? user.stateName : 'Kerala';
 
-export const Activity = () => (
-    <div className="page-container animate-fade-in">
-        <div className="card" style={{ marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.25rem' }}>Recent Activities</h3>
-                <button className="btn btn-primary">+ New Log</button>
+    const getMockWeather = (state) => {
+        let hash = 0;
+        for (let i = 0; i < state.length; i++) {
+            hash = state.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return {
+            temp: 20 + Math.abs(hash % 20),
+            humidity: 40 + Math.abs(hash % 50),
+            precip: Math.abs(hash % 40),
+            wind: 5 + Math.abs(hash % 25)
+        };
+    };
+
+    const weatherData = getMockWeather(displayState);
+
+    return (
+        <div className="page-container animate-fade-in">
+            <div className="card glass-panel text-center" style={{ padding: '3rem', marginBottom: '2rem', textAlign: 'center' }}>
+                <CloudSun size={64} color="var(--color-accent)" style={{ margin: '0 auto 1rem auto' }} />
+                <h2 style={{ fontSize: '3rem', marginTop: '1rem' }}>{weatherData.temp}°C</h2>
+                <p style={{ color: 'var(--color-text-muted)' }}>{t('weather.partly_cloudy').replace('Kerala', displayState).replace('केरल', displayState).replace('കേരളം', displayState)}</p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem' }}>
-                <div style={{ padding: '1rem', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-md)' }}>
-                    <strong>Harvested 50kg of Paddy</strong> - 2 days ago
-                </div>
-                <div style={{ padding: '1rem', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-md)' }}>
-                    <strong>Applied Organic Fertilizer</strong> - 5 days ago
-                </div>
+            <div className="grid-3">
+                <div className="card"><h4 style={{ color: 'var(--color-text-muted)' }}>{t('weather.humidity')}</h4><h3 style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>{weatherData.humidity}%</h3></div>
+                <div className="card"><h4 style={{ color: 'var(--color-text-muted)' }}>{t('weather.precipitation')}</h4><h3 style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>{weatherData.precip}% {t('weather.chance')}</h3></div>
+                <div className="card"><h4 style={{ color: 'var(--color-text-muted)' }}>{t('weather.wind')}</h4><h3 style={{ fontSize: '1.5rem', marginTop: '0.5rem' }}>{weatherData.wind} km/h</h3></div>
             </div>
         </div>
-    </div>
-);
+    );
+};
+
+const VIRTUAL_LAYOUTS = {
+    hi: [
+        ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ए', 'ऐ', 'ओ', 'औ'],
+        ['क', 'ख', 'ग', 'घ', 'च', 'छ', 'ज', 'झ', 'ट', 'ठ'],
+        ['ड', 'ढ', 'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब'],
+        ['भ', 'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह'],
+        ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ं'],
+        ['SPACE', 'BACKSPACE']
+    ],
+    ml: [
+        ['അ', 'ആ', 'ഇ', 'ഈ', 'ഉ', 'ഊ', 'എ', 'ഏ', 'ഐ', 'ഒ', 'ഓ', 'ഔ'],
+        ['ക', 'ഖ', 'ഗ', 'ഘ', 'ങ', 'ച', 'ഛ', 'ജ', 'ഝ', 'ഞ'],
+        ['ട', 'ഠ', 'ഡ', 'ഢ', 'ണ', 'ത', 'ഥ', 'ദ', 'ധ', 'ന'],
+        ['പ', 'ഫ', 'ബ', 'ഭ', 'മ', 'യ', 'ര', 'ല', 'വ', 'ശ', 'ഷ', 'സ', 'ഹ', 'ള', 'ഴ', 'റ'],
+        ['ാ', 'ി', 'ീ', 'ു', 'ൂ', 'െ', 'േ', 'ൈ', 'ൊ', 'ോ', 'ൗ'],
+        ['SPACE', 'BACKSPACE']
+    ]
+};
+
+const VirtualKeyboard = ({ lang, onKeyPress }) => {
+    const layout = VIRTUAL_LAYOUTS[lang];
+    if (!layout) return null;
+
+    return (
+        <div style={{ background: 'var(--color-surface-elevated)', padding: '10px', borderRadius: 'var(--radius-md)', marginTop: '10px', maxHeight: '200px', overflowY: 'auto' }}>
+            {layout.map((row, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'center', gap: '5px', marginBottom: '5px' }}>
+                    {row.map(key => (
+                        <button
+                            key={key}
+                            type="button"
+                            onClick={() => onKeyPress(key)}
+                            style={{
+                                padding: key.length > 1 ? '8px 16px' : '8px 12px',
+                                background: 'var(--color-bg)',
+                                color: 'var(--color-text)',
+                                border: '1px solid var(--color-border)',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                flex: key === 'SPACE' ? 2 : 1
+                            }}
+                        >
+                            {key === 'SPACE' ? '␣' : key === 'BACKSPACE' ? '⌫' : key}
+                        </button>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export const Activity = () => {
+    const { t, language } = useLanguage();
+    const [logs, setLogs] = useState([
+        { id: 1, title: t('activity.log1'), time: t('activity.log1_time') },
+        { id: 2, title: t('activity.log2'), time: t('activity.log2_time') }
+    ]);
+    const [showNewLogPopup, setShowNewLogPopup] = useState(false);
+    const [newLogActivity, setNewLogActivity] = useState('');
+    const textareaRef = useRef(null);
+
+    const handleSaveLog = () => {
+        if (!newLogActivity.trim()) return;
+        const newLog = {
+            id: Date.now(),
+            title: newLogActivity,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setLogs([newLog, ...logs]);
+        setNewLogActivity('');
+        setShowNewLogPopup(false);
+    };
+
+    const handleKeyboardPress = (key) => {
+        const textarea = textareaRef.current;
+        const start = textarea ? textarea.selectionStart : newLogActivity.length;
+        const end = textarea ? textarea.selectionEnd : newLogActivity.length;
+        
+        let newText = newLogActivity;
+        let newCursorPos = start;
+
+        if (key === 'BACKSPACE') {
+            if (start > 0 && start === end) {
+                newText = newText.slice(0, start - 1) + newText.slice(end);
+                newCursorPos = start - 1;
+            } else if (start !== end) {
+                newText = newText.slice(0, start) + newText.slice(end);
+                newCursorPos = start;
+            }
+        } else {
+            const char = key === 'SPACE' ? ' ' : key;
+            newText = newText.slice(0, start) + char + newText.slice(end);
+            newCursorPos = start + char.length;
+        }
+
+        setNewLogActivity(newText);
+        
+        setTimeout(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+                textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+            }
+        }, 0);
+    };
+
+    return (
+        <div className="page-container animate-fade-in">
+            <div className="card" style={{ marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.25rem' }}>{t('activity.recent')}</h3>
+                    <button className="btn btn-primary" onClick={() => setShowNewLogPopup(true)}>{t('activity.new_log')}</button>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem' }}>
+                    {logs.map(log => (
+                        <div key={log.id} style={{ padding: '1rem', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-md)' }}>
+                            <strong>{log.title}</strong> - {log.time}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {showNewLogPopup && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(5px)'
+                }}>
+                    <div className="card glass-panel" style={{ padding: '2rem', minWidth: '400px', maxWidth: '90vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+                        <h2 style={{ marginBottom: '1rem', flexShrink: 0 }}>{t('activity.new_log')}</h2>
+                        <textarea
+                            ref={textareaRef}
+                            value={newLogActivity}
+                            onChange={(e) => setNewLogActivity(e.target.value)}
+                            placeholder="Enter activity details..."
+                            style={{
+                                width: '100%', minHeight: '80px', flexShrink: 0, background: 'var(--color-surface-elevated)',
+                                border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)',
+                                padding: '1rem', color: 'white', marginBottom: '1rem', resize: 'none',
+                                outline: 'none', fontSize: '1.1rem'
+                            }}
+                        />
+                        
+                        <div style={{ overflowY: 'auto', overflowX: 'auto', flex: 1, minHeight: 0, paddingBottom: '10px' }}>
+                            {(language === 'hi' || language === 'ml') && (
+                                <VirtualKeyboard lang={language} onKeyPress={handleKeyboardPress} />
+                            )}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexShrink: 0 }}>
+                            <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowNewLogPopup(false)}>Cancel</button>
+                            <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSaveLog}>Save</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export const Marketplace = () => {
-    const [activeCategory, setActiveCategory] = useState('seeds');
+    const { t } = useLanguage();
+    const [activeCategory, setActiveCategory] = useState('fruits');
     const [cart, setCart] = useState([]);
+    const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
 
     const categories = ['fruits', 'vegetables', 'seeds', 'pesticides'];
-    
+
     const products = {
         fruits: [
-            { id: 'f1', name: 'Alphonso Mango', price: 80 },
-            { id: 'f2', name: 'Cavendish Banana', price: 40 },
-            { id: 'f3', name: 'Nagpur Orange', price: 60 },
+            { id: 'f1', name: 'Alphonso Mango', price: 80, img: '/mango.png' },
+            { id: 'f2', name: 'Cavendish Banana', price: 40, img: '/banana.png' },
+            { id: 'f3', name: 'Nagpur Orange', price: 60, img: '/orange.png' },
         ],
         vegetables: [
-            { id: 'v1', name: 'Onion (Nashik)', price: 30 },
-            { id: 'v2', name: 'Tomato', price: 25 },
-            { id: 'v3', name: 'Potato', price: 20 },
+            { id: 'v1', name: 'Onion (Nashik)', price: 30, img: '/onion.png' },
+            { id: 'v2', name: 'Tomato', price: 25, img: '/tomato.png' },
+            { id: 'v3', name: 'Potato', price: 20, img: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&q=80&w=300' },
         ],
         seeds: [
-            { id: 's1', name: 'Organic Wheat Seeds', price: 450 },
-            { id: 's2', name: 'Hybrid Tomato Seeds', price: 150 },
-            { id: 's3', name: 'Paddy Seeds IR64', price: 600 },
+            { id: 's1', name: 'Organic Wheat Seeds', price: 450, img: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&q=80&w=300' },
+            { id: 's2', name: 'Hybrid Tomato Seeds', price: 150, img: 'https://images.unsplash.com/photo-1508595165502-3e2652e5a405?auto=format&fit=crop&q=80&w=300' },
+            { id: 's3', name: 'Paddy Seeds IR64', price: 600, img: '/paddy_seed.jpg' },
         ],
         pesticides: [
-            { id: 'p1', name: 'Neem Oil Extract', price: 250 },
-            { id: 'p2', name: 'Bio-Fungicide', price: 300 },
-            { id: 'p3', name: 'Organic Insecticide', price: 180 },
+            { id: 'p1', name: 'Neem Oil Extract', price: 250, img: '/neem_oil_extract.jpg' },
+            { id: 'p2', name: 'Bio-Fungicide', price: 300, img: '/bio_fungicide.jpg' },
+            { id: 'p3', name: 'Organic Insecticide', price: 180, img: '/organic_insecticide.jpg' },
         ]
     };
 
@@ -244,6 +411,22 @@ export const Marketplace = () => {
         });
     };
 
+    const updateQuantity = (item, delta) => {
+        setCart(prev => {
+            return prev.map(i => {
+                if (i.id === item.id && i.type === item.type) {
+                    return { ...i, quantity: i.quantity + delta };
+                }
+                return i;
+            }).filter(i => i.quantity > 0);
+        });
+    };
+
+    const handleCheckout = () => {
+        setShowCheckoutPopup(true);
+        setCart([]);
+    };
+
     const buyTotal = cart.filter(i => i.type === 'buy').reduce((sum, item) => sum + item.price * item.quantity, 0);
     const sellTotal = cart.filter(i => i.type === 'sell').reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -252,13 +435,13 @@ export const Marketplace = () => {
             <div style={{ flex: '1 1 60%' }}>
                 <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
                     {categories.map(cat => (
-                        <button 
-                            key={cat} 
+                        <button
+                            key={cat}
                             className={`btn ${activeCategory === cat ? 'btn-primary' : 'btn-secondary'}`}
                             onClick={() => setActiveCategory(cat)}
                             style={{ textTransform: 'capitalize' }}
                         >
-                            {cat}
+                            {t(`market.${cat}`)}
                         </button>
                     ))}
                 </div>
@@ -266,14 +449,18 @@ export const Marketplace = () => {
                 <div className="grid-3">
                     {products[activeCategory].map(item => (
                         <div key={item.id} className="card">
-                            <div style={{ height: '150px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <ShoppingBag size={48} color="var(--color-text-muted)" opacity={0.3} />
+                            <div style={{ height: '150px', background: 'var(--color-surface-elevated)', borderRadius: 'var(--radius-sm)', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                {item.img ? (
+                                    <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    <ShoppingBag size={48} color="var(--color-text-muted)" opacity={0.3} />
+                                )}
                             </div>
-                            <h4 style={{ fontSize: '1.2rem'}}>{item.name}</h4>
-                            <p style={{ color: 'var(--color-primary-light)', fontWeight: 'bold', fontSize: '1.25rem', marginTop: '0.5rem' }}>₹{item.price}/unit</p>
+                            <h4 style={{ fontSize: '1.2rem' }}>{item.name}</h4>
+                            <p style={{ color: 'var(--color-primary-light)', fontWeight: 'bold', fontSize: '1.25rem', marginTop: '0.5rem' }}>₹{item.price}{t('market.unit')}</p>
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                <button className="btn btn-primary" style={{ flex: 1, padding: '8px' }} onClick={() => addToCart(item, 'buy')}>Buy</button>
-                                <button className="btn btn-secondary" style={{ flex: 1, padding: '8px' }} onClick={() => addToCart(item, 'sell')}>Sell</button>
+                                <button className="btn btn-primary" style={{ flex: 1, padding: '8px' }} onClick={() => addToCart(item, 'buy')}>{t('market.buy')}</button>
+                                <button className="btn btn-secondary" style={{ flex: 1, padding: '8px' }} onClick={() => addToCart(item, 'sell')}>{t('market.sell')}</button>
                             </div>
                         </div>
                     ))}
@@ -281,17 +468,20 @@ export const Marketplace = () => {
             </div>
 
             <div className="card glass-panel" style={{ flex: '1 1 300px', minWidth: '300px', height: 'fit-content', position: 'sticky', top: '2rem' }}>
-                <h3 style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>Your Cart</h3>
+                <h3 style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>{t('market.cart')}</h3>
                 {cart.length === 0 ? (
-                    <p style={{ color: 'var(--color-text-muted)' }}>Cart is empty</p>
+                    <p style={{ color: 'var(--color-text-muted)' }}>{t('market.empty')}</p>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         {cart.map((item, idx) => (
                             <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
+                                <div style={{ flex: 1 }}>
                                     <div style={{ fontWeight: '500' }}>{item.name}</div>
-                                    <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>
-                                        {item.type} • Qty: {item.quantity}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--color-text-muted)', textTransform: 'capitalize', marginTop: '0.25rem' }}>
+                                        {t(`market.${item.type}`)} • {t('market.qty')}:
+                                        <button onClick={() => updateQuantity(item, -1)} style={{ padding: '0 5px', fontSize: '1rem', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
+                                        <span style={{ fontWeight: '600' }}>{item.quantity}</span>
+                                        <button onClick={() => updateQuantity(item, 1)} style={{ padding: '0 5px', fontSize: '1rem', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
                                     </div>
                                 </div>
                                 <div style={{ fontWeight: '600', color: item.type === 'buy' ? 'var(--color-danger)' : 'var(--color-success)' }}>
@@ -299,70 +489,128 @@ export const Marketplace = () => {
                                 </div>
                             </div>
                         ))}
-                        
+
                         <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem', marginTop: '0.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                <span>Buy Total:</span>
+                                <span>{t('market.buy_total')}</span>
                                 <span style={{ color: 'var(--color-danger)', fontWeight: '600' }}>₹{buyTotal}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <span>Sell Total:</span>
+                                <span>{t('market.sell_total')}</span>
                                 <span style={{ color: 'var(--color-success)', fontWeight: '600' }}>₹{sellTotal}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                <span>Net:</span>
+                                <span>{t('market.net')}</span>
                                 <span style={{ color: sellTotal - buyTotal >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
                                     {sellTotal - buyTotal >= 0 ? '+' : ''}₹{sellTotal - buyTotal}
                                 </span>
                             </div>
                         </div>
-                        <button className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Checkout</button>
+                        <button className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} onClick={handleCheckout}>{t('market.checkout')}</button>
                     </div>
                 )}
+            </div>
+
+            {showCheckoutPopup && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(5px)'
+                }}>
+                    <div className="card glass-panel" style={{ textAlign: 'center', padding: '2rem', minWidth: '300px' }}>
+                        <h2 style={{ marginBottom: '1rem', color: 'var(--color-success)' }}>Success</h2>
+                        <p style={{ color: 'var(--color-text)', marginBottom: '2rem', fontSize: '1.2rem', fontWeight: '500' }}>Your order is placed, thank you.</p>
+                        <button className="btn btn-primary" onClick={() => setShowCheckoutPopup(false)}>OK</button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export const Schemes = () => {
+    const { t } = useLanguage();
+    return (
+        <div className="page-container animate-fade-in">
+            <div className="grid-2">
+                <div className="card glass-panel" style={{ borderLeft: '4px solid var(--color-primary)' }}>
+                    <h3>{t('schemes.pmfby.title')}</h3>
+                    <p style={{ marginTop: '0.5rem', color: 'var(--color-text-muted)', lineHeight: '1.6' }}>{t('schemes.pmfby.desc')}</p>
+                    <button className="btn btn-secondary" style={{ marginTop: '1.5rem' }}>{t('schemes.pmfby.btn')}</button>
+                </div>
+                <div className="card glass-panel" style={{ borderLeft: '4px solid var(--color-accent)' }}>
+                    <h3>{t('schemes.kerala.title')}</h3>
+                    <p style={{ marginTop: '0.5rem', color: 'var(--color-text-muted)', lineHeight: '1.6' }}>{t('schemes.kerala.desc')}</p>
+                    <button className="btn btn-secondary" style={{ marginTop: '1.5rem' }}>{t('schemes.kerala.btn')}</button>
+                </div>
             </div>
         </div>
     );
 };
 
-export const Schemes = () => (
-    <div className="page-container animate-fade-in">
-        <div className="grid-2">
-            <div className="card glass-panel" style={{ borderLeft: '4px solid var(--color-primary)' }}>
-                <h3>Pradhan Mantri Fasal Bima Yojana</h3>
-                <p style={{ marginTop: '0.5rem', color: 'var(--color-text-muted)', lineHeight: '1.6' }}>Crop insurance scheme providing financial support to farmers.</p>
-                <button className="btn btn-secondary" style={{ marginTop: '1.5rem' }}>Apply Now</button>
+export const RoverBooking = () => {
+    const { t } = useLanguage();
+    const [showBookingPopup, setShowBookingPopup] = useState(false);
+    const [date, setDate] = useState('');
+    const [error, setError] = useState('');
+
+    const handleConfirm = () => {
+        if (!date) {
+            setError('Please select date');
+            return;
+        }
+        setError('');
+        setShowBookingPopup(true);
+    };
+
+    return (
+        <div className="page-container animate-fade-in">
+            <div className="card glass-panel" style={{ textAlign: 'center', padding: '3rem' }}>
+                <Tractor size={64} color="var(--color-primary-light)" style={{ margin: '0 auto 1.5rem auto' }} />
+                <h2>{t('rover.title')}</h2>
+                <p style={{ marginTop: '1rem', color: 'var(--color-text-muted)', marginBottom: '3rem' }}>
+                    {t('rover.desc')}
+                </p>
+
+                <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'left' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('rover.date')}</label>
+                    <input 
+                        type="date" 
+                        value={date}
+                        onChange={(e) => {
+                            setDate(e.target.value);
+                            if (e.target.value) setError('');
+                        }}
+                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: `1px solid ${error ? 'var(--color-danger, red)' : 'var(--color-border)'}`, color: 'white', marginBottom: error ? '0.5rem' : '1.5rem', outline: 'none' }} 
+                    />
+                    {error && <p style={{ color: 'var(--color-danger, red)', fontSize: '0.9rem', marginBottom: '1rem', marginTop: '-0.25rem' }}>{error}</p>}
+
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('rover.service')}</label>
+                    <select style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', marginBottom: '2rem', outline: 'none' }}>
+                        <option>{t('rover.opt_full')}</option>
+                        <option>{t('rover.opt_soil')}</option>
+                        <option>{t('rover.opt_pest')}</option>
+                    </select>
+
+                    <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleConfirm}>{t('rover.confirm')}</button>
+                </div>
             </div>
-            <div className="card glass-panel" style={{ borderLeft: '4px solid var(--color-accent)' }}>
-                <h3>Kerala Agriculture Subsidy 2025</h3>
-                <p style={{ marginTop: '0.5rem', color: 'var(--color-text-muted)', lineHeight: '1.6' }}>Subsidies on seeds and fertilizers for small-scale farmers.</p>
-                <button className="btn btn-secondary" style={{ marginTop: '1.5rem' }}>View Eligibility</button>
-            </div>
+
+            {showBookingPopup && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.8)', zIndex: 9999,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(5px)'
+                }}>
+                    <div className="card glass-panel" style={{ textAlign: 'center', padding: '2rem', minWidth: '300px' }}>
+                        <h2 style={{ marginBottom: '1rem', color: 'var(--color-success)' }}>Success</h2>
+                        <p style={{ color: 'var(--color-text)', marginBottom: '2rem', fontSize: '1.2rem', fontWeight: '500' }}>Your order is placed.</p>
+                        <button className="btn btn-primary" onClick={() => setShowBookingPopup(false)}>OK</button>
+                    </div>
+                </div>
+            )}
         </div>
-    </div>
-);
-
-export const RoverBooking = () => (
-    <div className="page-container animate-fade-in">
-        <div className="card glass-panel" style={{ textAlign: 'center', padding: '3rem' }}>
-            <Tractor size={64} color="var(--color-primary-light)" style={{ margin: '0 auto 1.5rem auto' }} />
-            <h2>Book Kisan Sakhi Rover</h2>
-            <p style={{ marginTop: '1rem', color: 'var(--color-text-muted)', marginBottom: '3rem' }}>
-                Schedule the hardware rover to visit your field and perform automated soil testing and pest detection.
-            </p>
-
-            <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'left' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Select Date:</label>
-                <input type="date" style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', marginBottom: '1.5rem', outline: 'none' }} />
-
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Service Needed:</label>
-                <select style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', marginBottom: '2rem', outline: 'none' }}>
-                    <option>Full Report (Soil + Vision)</option>
-                    <option>Soil Test Only</option>
-                    <option>Pest Detection Only</option>
-                </select>
-
-                <button className="btn btn-primary" style={{ width: '100%' }}>Confirm Booking</button>
-            </div>
-        </div>
-    </div>
-);
+    );
+};
