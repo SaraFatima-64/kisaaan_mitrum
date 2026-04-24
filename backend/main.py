@@ -2,16 +2,20 @@ import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from openai import OpenAI
+import google.generativeai as genai
 from dotenv import load_dotenv
 from database import engine
 import models
 
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai_client = None
-if OPENAI_API_KEY and OPENAI_API_KEY != "your_openai_api_key_here":
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+gemini_model = None
+if GEMINI_API_KEY and GEMINI_API_KEY != "your_gemini_api_key_here":
+    genai.configure(api_key=GEMINI_API_KEY)
+    gemini_model = genai.GenerativeModel(
+        "gemini-1.5-flash",
+        system_instruction="You are an expert personal farming assistant for Kerala farmers called Kisan Mitrum that gives concise, accurate agricultural advice."
+    )
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -49,24 +53,18 @@ def get_offline_response(message: str) -> str:
     elif "soil" in msg:
         return "Recent data from Kisan Sakhi shows soil moisture is at 42%, which is in the optimal range."
     else:
-        return "I'm running in offline mode (because your OpenAI API key has exceeded its quota, is not configured properly, or is disabled in your region). I can still help with basic questions on weather, planting, and soil health. Can you describe your concern in more detail?"
+        return "I'm running in offline mode (because your Gemini API key has exceeded its quota, is not configured properly, or is disabled in your region). I can still help with basic questions on weather, planting, and soil health. Can you describe your concern in more detail?"
 
 @app.post("/api/chat")
 def chat_endpoint(request: ChatRequest):
-    if openai_client:
+    if gemini_model:
         try:
-            completion = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "You are an expert personal farming assistant for Kerala farmers called Kisan Mitrum that gives concise, accurate agricultural advice."},
-                    {"role": "user", "content": request.message}
-                ]
-            )
-            response = completion.choices[0].message.content
+            response = gemini_model.generate_content(request.message)
+            reply = response.text
         except Exception as e:
             print(f"LLM Error: {e}")
-            response = get_offline_response(request.message)
+            reply = get_offline_response(request.message)
     else:
-        response = get_offline_response(request.message)
+        reply = get_offline_response(request.message)
         
-    return {"response": response}
+    return {"response": reply}

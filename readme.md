@@ -16,8 +16,8 @@ Sections use SCREAMING_SNAKE_CASE anchors so agents can locate them with a grep 
 ## [META]
 ```
 project_name   : Kisan
-version        : 2.2.0
-last_updated   : 2026-04-18
+version        : 2.3.0
+last_updated   : 2026-04-24
 status         : In Development
 document_owner : Project Team
 ```
@@ -43,7 +43,7 @@ A React.js + FastAPI web platform that acts as the farmer's digital assistant.
 - User Authentication System (Sign In/Log In modal with dynamic user profile display)
 - Multilingual support with explicit language toggling functionality
 - Responsive Navigation (Top status bar and collapsible left-hand menu)
-- AI Chatbot (OpenAI LLM API integration with rule-based fallback and Voice-to-Text input)
+- AI Chatbot (Gemini LLM API integration with rule-based fallback and Voice-to-Text input)
 - Weather alerts dashboard
 - Activity logging system (dynamic entry with adaptive virtual Hindi/Malayalam keyboard)
 - E-commerce marketplace (with cart management and image-mapped inventory)
@@ -126,8 +126,9 @@ Kisan Sakhi (rover)  -->  Kisan Mitrum (web app)  -->  Recommendations
 
 | Version | Date       | Change                                                                                                                                                                      |
 |---------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2.3.0   | 2026-04-24 | Transitioned Chatbot from OpenAI to Google Gemini API.                      |
 | 2.2.0   | 2026-04-18 | Elevated Marketplace/Rover Booking with mapped inventory images and confirmation popups; implemented dynamic Activity Logging via a custom multi-language Virtual Keyboard.   |
-| 2.1.0   | 2026-04-18 | Added User Authentication, Multilingual localization/toggle, Navigation refactoring, Chatbot migration to OpenAI & offline fallback, and secured environment configurations. |
+| 2.1.0   | 2026-04-18 | Added User Authentication, Multilingual localization/toggle, Navigation refactoring, Chatbot migration back to Gemini (previous OpenAI logic decoupled) & offline fallback |
 | 2.0.0   | 2025-07-11 | Initial README created from v2 project document                                                                                                                             |
 
 ---
