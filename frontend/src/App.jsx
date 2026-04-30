@@ -98,26 +98,26 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
             placeholder={t('auth.name')} 
             value={name} 
             onChange={e => setName(e.target.value)} 
-            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', outline: 'none' }}
           />
           <input 
             type="email" 
             placeholder={t('auth.email')} 
             value={email} 
             onChange={e => setEmail(e.target.value)}
-            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', outline: 'none' }}
           />
           <input 
             type="tel" 
             placeholder={t('auth.phone')} 
             value={phone} 
             onChange={e => setPhone(e.target.value)} 
-            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', outline: 'none' }}
           />
           <select 
             value={stateName} 
             onChange={e => setStateName(e.target.value)} 
-            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', outline: 'none' }}
           >
             <option value="" disabled>{t('auth.state')}</option>
             {indianStates.map(state => (
@@ -130,7 +130,7 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
               placeholder={t('auth.password')} 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
-              style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', outline: 'none' }}
+              style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', outline: 'none' }}
             />
             <button 
               onClick={() => setShowPassword(!showPassword)} 

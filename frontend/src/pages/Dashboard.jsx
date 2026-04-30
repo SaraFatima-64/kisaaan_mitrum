@@ -11,7 +11,7 @@ export const Dashboard = () => {
                 <select
                     value={language || 'en'}
                     onChange={(e) => setLanguage(e.target.value)}
-                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-sm)', background: 'white', color: 'var(--color-bg)', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '1.1rem', fontWeight: '500', minWidth: '150px' }}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-sm)', background: 'white', color: 'var(--color-text)', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '1.1rem', fontWeight: '500', minWidth: '150px' }}
                 >
                     <option value="en">English</option>
                     <option value="hi">हिंदी</option>

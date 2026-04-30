@@ -40,12 +40,12 @@ export const RoverBooking = () => {
                             setDate(e.target.value);
                             if (e.target.value) setError('');
                         }}
-                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: `1px solid ${error ? 'var(--color-danger, red)' : 'var(--color-border)'}`, color: 'white', marginBottom: error ? '0.5rem' : '1.5rem', outline: 'none' }} 
+                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: `1px solid ${error ? 'var(--color-danger, red)' : 'var(--color-border)'}`, color: 'var(--color-text)', marginBottom: error ? '0.5rem' : '1.5rem', outline: 'none' }} 
                     />
                     {error && <p style={{ color: 'var(--color-danger, red)', fontSize: '0.9rem', marginBottom: '1rem', marginTop: '-0.25rem' }}>{error}</p>}
 
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t('rover.service')}</label>
-                    <select style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', marginBottom: '2rem', outline: 'none' }}>
+                    <select style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', marginBottom: '2rem', outline: 'none' }}>
                         <option>{t('rover.opt_full')}</option>
                         <option>{t('rover.opt_soil')}</option>
                         <option>{t('rover.opt_pest')}</option>

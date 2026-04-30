@@ -111,9 +111,9 @@ export const Marketplace = () => {
                                     <div style={{ fontWeight: '500' }}>{item.name}</div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--color-text-muted)', textTransform: 'capitalize', marginTop: '0.25rem' }}>
                                         {t(`market.${item.type}`)} • {t('market.qty')}:
-                                        <button onClick={() => updateQuantity(item, -1)} style={{ padding: '0 5px', fontSize: '1rem', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
+                                        <button onClick={() => updateQuantity(item, -1)} style={{ padding: '0 5px', fontSize: '1rem', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
                                         <span style={{ fontWeight: '600' }}>{item.quantity}</span>
-                                        <button onClick={() => updateQuantity(item, 1)} style={{ padding: '0 5px', fontSize: '1rem', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'white', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+                                        <button onClick={() => updateQuantity(item, 1)} style={{ padding: '0 5px', fontSize: '1rem', background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', color: 'var(--color-text)', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
                                     </div>
                                 </div>
                                 <div style={{ fontWeight: '600', color: item.type === 'buy' ? 'var(--color-danger)' : 'var(--color-success)' }}>
