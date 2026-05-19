@@ -20,7 +20,7 @@ export const RoverBooking = () => {
     return (
         <div className="page-container animate-fade-in">
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', padding: '0.75rem 1.5rem' }}>
+                <button className="btn btn-primary" onClick={() => window.location.href = '/login.html'} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', padding: '0.75rem 1.5rem' }}>
                     Control Rover
                 </button>
             </div>

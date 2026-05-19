@@ -1,10 +1,10 @@
 import os
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI  # type: ignore
+from pydantic import BaseModel  # type: ignore
 from typing import Optional, Dict, Any
-from fastapi.middleware.cors import CORSMiddleware
-from groq import Groq
-from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware  # type: ignore
+from groq import Groq  # type: ignore
+from dotenv import load_dotenv  # type: ignore
 from database import engine
 import models
 

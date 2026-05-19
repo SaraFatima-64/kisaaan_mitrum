@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Login</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --box-bg: #161b2c;
+            --input-bg: #222a42;
+            --text: #e2e8f0;
+            --primary: #4fa3ff;
+            --primary-hover: #3a8ee6;
+            --success: #10b981;
+            --success-hover: #059669;
+            --error: #ef4444;
+            --border: #2a3441;
+        }
+
+        body.login-body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+        }
+
+        .login-box {
+            background: var(--box-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 320px;
+            border: 1px solid var(--border);
+        }
+
+        .login-box h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .login-box input {
+            display: block;
+            margin: 0 auto 15px auto;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            width: 100%;
+            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .login-box button {
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background 0.2s;
+        }
+
+        .login-box button:hover {
+            background: var(--primary-hover);
+        }
+
+        #error-msg {
+            color: var(--error);
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+            font-weight: 500;
+        }
+
+        #success-container {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        #success-container p {
+            margin: 0 0 15px 0;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        #connect-link {
+            display: inline-block;
+            padding: 12px 20px;
+            background: var(--success);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background 0.2s;
+        }
+
+        #connect-link:hover {
+            background: var(--success-hover);
+        }
+    </style>
+</head>
+
+<body class="login-body">
+    <div class="login-box">
+        <h2>Robot Access</h2>
+        <input type="text" id="ip-input" placeholder="Robot IP (e.g., 192.168.137.x)" />
+        <input type="password" id="pwd-input" placeholder="Password" />
+        <button onclick="checkLogin()">Login</button>
+
+        <div id="error-msg">
+            Incorrect password. Please try again.
+        </div>
+
+        <div id="success-container">
+            <p>✅ Authentication Successful</p>
+            <a id="connect-link" href="#" target="_blank" rel="noopener noreferrer">
+                Open Robot Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const ipInput = document.getElementById('ip-input');
+        const pwdInput = document.getElementById('pwd-input');
+        const errorMsg = document.getElementById('error-msg');
+        const successContainer = document.getElementById('success-container');
+        const connectLink = document.getElementById('connect-link');
+
+        function checkLogin() {
+            const ip = ipInput.value.trim();
+            const pwd = pwdInput.value;
+
+            if (!ip) {
+                alert("Please enter a valid IP address");
+                return;
+            }
+
+            if (pwd === "robot123") {
+                errorMsg.style.display = 'none';
+                successContainer.style.display = 'block';
+
+                const url = `http://${ip}:5000/robot-dashboard`;
+                connectLink.href = url;
+
+                // Automatically redirect to the robot dashboard
+                window.location.href = url;
+            } else {
+                errorMsg.style.display = 'block';
+                successContainer.style.display = 'none';
+            }
+        }
+
+        pwdInput.addEventListener('keypress', function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkLogin();
+            }
+        });
+    </script>
+</body>
+
+</html>

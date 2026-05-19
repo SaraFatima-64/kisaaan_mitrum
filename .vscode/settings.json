@@ -1,6 +1,19 @@
 {
     "python.analysis.extraPaths": [
-        "${workspaceFolder}/backend"
+        "C:\\Users\\G15\\Desktop\\kisaaan_mitrum\\backend",
+        "C:\\Users\\G15\\Desktop\\kisaaan_mitrum\\backend\\venv\\Lib\\site-packages"
     ],
-    "python.terminal.useEnvFile": true
+    "python.terminal.useEnvFile": true,
+    "python.defaultInterpreterPath": "C:\\Users\\G15\\Desktop\\kisaaan_mitrum\\backend\\venv\\Scripts\\python.exe",
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.ignore": [
+        "**"
+    ],
+    "python.linting.enabled": false,
+    "python.linting.pylintEnabled": false,
+    "pyrightconfig": {
+        "ignore": [
+            "**"
+        ]
+    }
 }

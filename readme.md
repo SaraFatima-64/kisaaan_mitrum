@@ -16,8 +16,8 @@ Sections use SCREAMING_SNAKE_CASE anchors so agents can locate them with a grep 
 ## [META]
 ```
 project_name   : Kisan
-version        : 2.4.0
-last_updated   : 2026-04-25
+version        : 2.5.0
+last_updated   : 2026-05-19
 status         : In Development
 document_owner : Project Team
 ```
@@ -105,7 +105,7 @@ Kisan Sakhi (rover)  -->  Kisan Mitrum (web app)  -->  Recommendations
 
 ## [UI_DESIGN]
 
-- **Color Theme:** Green and brown (representing agriculture and soil)
+- **Color Theme:** Light green and white (providing a brighter, modern, and accessible interface)
 - **Logo:** Kisan Mitrum logo — top-left corner
 - **Layout:** Multi-page with dedicated routes for each feature
 
@@ -126,6 +126,7 @@ Kisan Sakhi (rover)  -->  Kisan Mitrum (web app)  -->  Recommendations
 
 | Version | Date       | Change                                                                                                                                                                      |
 |---------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2.5.0   | 2026-05-19 | Redesigned platform to a light green and white theme with improved text readability; added state persistence for user inputs and activity logs; resolved backend dependency/model errors; created setup/run scripts (setup.sh, setup.bat, run.sh, run.bat) for easier environment configuration. |
 | 2.4.0   | 2026-04-25 | Transitioned Chatbot to Groq API from Google Gemini API.                    |
 | 2.3.0   | 2026-04-24 | Transitioned Chatbot from OpenAI to Google Gemini API.                      |
 | 2.2.0   | 2026-04-18 | Elevated Marketplace/Rover Booking with mapped inventory images and confirmation popups; implemented dynamic Activity Logging via a custom multi-language Virtual Keyboard.   |
